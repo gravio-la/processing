@@ -1,4 +1,5 @@
 import type { StorybookConfig } from "@storybook/react-vite";
+
 const config: StorybookConfig = {
   stories: [
     "../src/**/*.mdx",
@@ -16,6 +17,13 @@ const config: StorybookConfig = {
   },
   docs: {
     autodocs: "tag",
+  },
+  viteFinal: async (config) => {
+    const base = process.env.STORYBOOK_BASE_PATH?.trim();
+    if (base) {
+      config.base = base.endsWith("/") ? base : `${base}/`;
+    }
+    return config;
   },
 };
 export default config;
