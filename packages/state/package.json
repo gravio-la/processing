@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "catalog:",
+    "lodash": "catalog:",
     "material-react-table": "^1.15.1",
     "project-state": "workspace:*",
     "react-redux": "catalog:",
