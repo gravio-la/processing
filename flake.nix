@@ -1,17 +1,17 @@
 {
   description = "";
-  inputs.nixpkgs.url = "nixpkgs/nixos-unstable";
+  inputs.nixpkgs.url = "nixpkgs/nixos-24.05";
 
   outputs = { self, nixpkgs }:
     let
       lastModifiedDate = self.lastModifiedDate or self.lastModified or "19700101";
       version = builtins.substring 0 8 lastModifiedDate;
-      supportedSystems = [ "x86_64-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin" ];
+      supportedSystems = [ "x86_64-linux" ];
       forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
-      nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; overlays = [ self.overlay ]; });
+      nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; overlays = [ self.overlays.default ]; });
       pname = "fw-processing";
     in {
-      overlay = final: prev: with final; let
+      overlays.default = final: prev: with final; let
         version = (lib.importJSON ./package.json).version;
         meta_ = {
           license = lib.licenses.mit;
@@ -57,7 +57,9 @@
           name = "${pname}-${scope}-nodeModules-${version}";
           src = #fw-processing-react-redux-yjs-turbo;
                 fw-processing-react-redux-yjs-yarn;
-          buildInputs = [nodePackages.pnpm yarn nodejs];
+          buildInputs = [nodePackages.pnpm yarn nodejs cacert];
+          SSL_CERT_FILE = "${cacert}/etc/ssl/certs/ca-bundle.crt";
+          NODE_EXTRA_CA_CERTS = "${cacert}/etc/ssl/certs/ca-bundle.crt";
           buildPhase = ''
             export HOME=$(mktemp -d)
 
@@ -73,11 +75,10 @@
           '';
           meta = meta_ // {description = "";};
           outputHashMode = "recursive";
-          #outputHash = lib.fakeHash;
-          outputHash = "sha256-y4B0+4W6Ng8Nb/SqdiihByojBvLDqfgs/Cvi7oU5ERM=";
+          outputHash = "sha256-0SHp1rV06Yg6WE8MySAMwqWaxRTC0wa6uIHozmVFV1M=";
           #outputHash = (lib.importJSON ./flake.hashes.json).react-redux-yjs;
-          allowedReferences = [bash nodejs];
           __structuredAttrs = true;
+          outputChecks.out.allowedReferences = [ bash nodejs ];
           unsafeDiscardReferences.out = true;
           #__contentAddressed = true;
         };
@@ -131,10 +132,12 @@
           '';
         };
       };
-      packages = forAllSystems (system: {
-        inherit (nixpkgsFor.${system}) fw-processing-react-redux-yjs-turbo fw-processing-react-redux-yjs-yarn fw-processing-react-redux-yjs-nodeModules fw-processing-react-redux-yjs-nodePackage fw-processing fw-processing-dev;
+      packages = forAllSystems (system: let p = nixpkgsFor.${system}; in {
+        inherit (p) fw-processing-react-redux-yjs-turbo fw-processing-react-redux-yjs-yarn fw-processing-react-redux-yjs-nodeModules fw-processing-react-redux-yjs-nodePackage fw-processing fw-processing-dev;
+        default = p.${pname};
       });
-      defaultPackage = forAllSystems (system: self.packages.${system}."${pname}");
-      devShell = forAllSystems (system: self.packages.${system}."${pname}-dev");
+      devShells = forAllSystems (system: {
+        default = self.packages.${system}.fw-processing-dev;
+      });
     };
 }
