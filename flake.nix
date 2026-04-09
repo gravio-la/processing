@@ -1,143 +1,161 @@
 {
-  description = "";
-  inputs.nixpkgs.url = "nixpkgs/nixos-24.05";
+  description = "fw-processing — pnpm monorepo (Turbo) packaged with fetchPnpmDeps + pnpmConfigHook";
 
-  outputs = { self, nixpkgs }:
+  inputs.nixpkgs.url = "nixpkgs/nixos-25.11";
+
+  outputs =
+    { self, nixpkgs }:
     let
-      lastModifiedDate = self.lastModifiedDate or self.lastModified or "19700101";
-      version = builtins.substring 0 8 lastModifiedDate;
       supportedSystems = [ "x86_64-linux" ];
       forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
-      nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; overlays = [ self.overlays.default ]; });
-      pname = "fw-processing";
-    in {
-      overlays.default = final: prev: with final; let
-        version = (lib.importJSON ./package.json).version;
-        meta_ = {
-          license = lib.licenses.mit;
-          homepage = "";
-          maintainers = with lib.maintainers; [ j03 ];
-          platforms = lib.platforms.linux;
-        };
-        scope = "react-redux-yjs";
-      in rec {
+    in
+    {
+      packages = forAllSystems (
+        system:
+        let
+          pkgs = import nixpkgs { inherit system; };
+          inherit (pkgs)
+            lib
+            stdenv
+            fetchPnpmDeps
+            pnpmConfigHook
+            pnpm_10
+            nodejs_20
+            turbo
+            jq
+            ;
 
-        "${pname}-${scope}-turbo" = stdenv.mkDerivation rec {
-          inherit version;
-          name = "${pname}-${scope}-turbo-${version}";
-          src = ./.;
-          buildInputs = [turbo];
-          buildPhase = ''
-            turbo prune --scope "${scope}"
-          '';
-          installPhase = ''
-            cp -r out $out
-          '';
-          meta = meta_ // {description = "Pruned turbo-repo (containing pnpm package)";};
-        };
+          pname = "fw-processing";
+          version = (lib.importJSON ./package.json).version;
+          src = lib.cleanSource ./.;
 
-        "${pname}-${scope}-yarn" = stdenv.mkDerivation rec {
-          inherit version;
-          name = "${pname}-${scope}-yarn-${version}";
-          src = fw-processing-react-redux-yjs-turbo;
-          buildInputs = [pnpm-lock-export gnused];
-          buildPhase = ''
-            pnpm-lock-export --schema yarn.lock@v1
-            #sed -i 's/"workspace:\*"/"*"/g' package.json
-            #sed -i 's/"workspace:\*"/"*"/g' packages/${scope}/package.json
-          '';
-          installPhase = ''
-            cp -r . $out
-          '';
-          meta = meta_ // {description = "Yarn-repo (with workspaces)";};
-        };
+          meta = {
+            description = "Form processing / React–Redux–Yjs workspace";
+            license = lib.licenses.mit;
+            maintainers = with lib.maintainers; [ j03 ];
+            platforms = lib.platforms.linux;
+          };
 
-        fw-processing-react-redux-yjs-nodeModules = stdenv.mkDerivation rec {
-          inherit version;
-          name = "${pname}-${scope}-nodeModules-${version}";
-          src = #fw-processing-react-redux-yjs-turbo;
-                fw-processing-react-redux-yjs-yarn;
-          buildInputs = [nodePackages.pnpm yarn nodejs cacert];
-          SSL_CERT_FILE = "${cacert}/etc/ssl/certs/ca-bundle.crt";
-          NODE_EXTRA_CA_CERTS = "${cacert}/etc/ssl/certs/ca-bundle.crt";
-          buildPhase = ''
-            export HOME=$(mktemp -d)
+          scope = "react-redux-yjs";
 
-            pnpm install
+          #
+          # Pruned subset (Turbo) — same role as the old *-turbo package.
+          #
+          fw-processing-react-redux-yjs-turbo = stdenv.mkDerivation {
+            name = "${pname}-${scope}-turbo-${version}";
+            inherit src version;
+            pname = "${pname}-${scope}-turbo";
 
-            #yarn --ignore-scripts
-            #( cd packages/${scope}
-            #  yarn
-            #)
-          '';
-          installPhase = ''
-            cp -r . $out
-          '';
-          meta = meta_ // {description = "";};
-          outputHashMode = "recursive";
-          outputHash = "sha256-0SHp1rV06Yg6WE8MySAMwqWaxRTC0wa6uIHozmVFV1M=";
-          #outputHash = (lib.importJSON ./flake.hashes.json).react-redux-yjs;
-          __structuredAttrs = true;
-          outputChecks.out.allowedReferences = [ bash nodejs ];
-          unsafeDiscardReferences.out = true;
-          #__contentAddressed = true;
-        };
+            nativeBuildInputs = [ turbo ];
 
-        "${pname}-${scope}-nodePackage" = stdenv.mkDerivation rec {
-          inherit version;
-          name = "${pname}-${scope}-nodePackage-${version}";
-          src = fw-processing-react-redux-yjs-yarn;
-          buildInputs = [yarn] ++ [fw-processing-react-redux-yjs-nodeModules] ++ [nodejs];
-          buildPhase = ''
-            ln -s ${fw-processing-react-redux-yjs-nodeModules}/node_modules .
-            cp ${fw-processing-react-redux-yjs-nodeModules}/yarn.lock . || true
+            dontConfigure = true;
 
-            ln -s ${fw-processing-react-redux-yjs-nodeModules}/packages/${scope}/node_modules packages/${scope}
-            cp ${fw-processing-react-redux-yjs-nodeModules}/packages/${scope}/yarn.lock packages/${scope}  || true
-          '';
-          installPhase = ''
-            cp -r . $out
-          '';
-          meta = meta_ // {description = "";};
-        };
+            buildPhase = ''
+              runHook preBuild
+              turbo prune --scope "${scope}"
+              runHook postBuild
+            '';
 
-        "${pname}" = fw-processing-react-redux-yjs-nodePackage;
+            installPhase = ''
+              runHook preInstall
+              mv out $out
+              runHook postInstall
+            '';
 
-        "${pname}-dev" = pkgs.mkShell {
-          nativeBuildInputs = with pkgs; [ yarn nodejs ];
-          shellHook = ''
-            export HOME=$(mktemp -d)
-            ls -l ${fw-processing-react-redux-yjs-nodeModules} ~/nodePackage
-            #cp -rL ${fw-processing-react-redux-yjs-nodePackage} ~/nodePackage
-            chmod -R +w ~/
-            cd ~/nodePackage
+            meta = meta // {
+              description = "Turbo-pruned workspace subset (pnpm workspace, lockfile inside)";
+            };
+          };
 
-            ( cd packages/react-redux-yjs/node_modules
-              #rm -r eslint-config-custom style tsconfig
-              #ln -s ../../eslint-config-custom .
-              #ln -s ../../react-redux-yjs .
-              #ln -s ../../style .
-              #ln -s ../../tsconfig .
-            )
+          #
+          # Fixed-output pnpm dependency store (replaces the old ad-hoc nodeModules FOD).
+          #
+          pnpmDeps =
+            fetchPnpmDeps {
+              inherit pname version src;
+              pnpm = pnpm_10;
+              fetcherVersion = 3;
+              hash = "sha256-KzsmNg2hNKx5ePNrM9SBi0gkA2m+s4IQnJvXNx6rlDg=";
+            };
 
-            #rm -r node_modules/turbo
-            yes | pnpm install  ## TODO
-            pnpm --offline --frozen-lockfile install
-            pnpm --offline build
+          #
+          # Full install + Turbo build for the scoped package (replaces yarn + manual symlinks).
+          #
+          fw-processing = stdenv.mkDerivation {
+            name = "${pname}-${version}";
+            inherit pname version src pnpmDeps;
 
-            #yarn --offline install
-            #rm -r node_modules/turbo
-            #pnpm install
-            ##yarn --offline build
-          '';
-        };
-      };
-      packages = forAllSystems (system: let p = nixpkgsFor.${system}; in {
-        inherit (p) fw-processing-react-redux-yjs-turbo fw-processing-react-redux-yjs-yarn fw-processing-react-redux-yjs-nodeModules fw-processing-react-redux-yjs-nodePackage fw-processing fw-processing-dev;
-        default = p.${pname};
-      });
-      devShells = forAllSystems (system: {
-        default = self.packages.${system}.fw-processing-dev;
-      });
+            nativeBuildInputs = [
+              nodejs_20
+              pnpmConfigHook
+              pnpm_10
+              jq
+            ];
+
+            # Avoid pnpm trying to download the exact `packageManager` pin (no network in sandbox).
+            patchPhase = ''
+              runHook prePatch
+              jq 'del(.packageManager)' package.json > package.json.tmp
+              mv package.json.tmp package.json
+              runHook postPatch
+            '';
+
+            # pnpm expects a writable HOME for its metadata cache.
+            preBuild = ''
+              export HOME="$TMPDIR"
+            '';
+
+            buildPhase = ''
+              runHook preBuild
+              pnpm --filter "${scope}" run build
+              runHook postBuild
+            '';
+
+            installPhase = ''
+              runHook preInstall
+              mkdir -p "$out/lib/${pname}"
+              cp -r packages/${scope}/dist "$out/lib/${pname}/"
+              cp packages/${scope}/package.json "$out/lib/${pname}/"
+              runHook postInstall
+            '';
+
+            passthru = {
+              inherit pnpmDeps fw-processing-react-redux-yjs-turbo;
+            };
+
+            meta = meta // {
+              description = "Built ${scope} package (dist + package.json)";
+            };
+          };
+        in
+        {
+          inherit fw-processing fw-processing-react-redux-yjs-turbo;
+
+          # Back-compat names from the old flake (Yarn path removed).
+          fw-processing-react-redux-yjs-nodeModules = pnpmDeps;
+          fw-processing-react-redux-yjs-nodePackage = fw-processing;
+
+          default = fw-processing;
+        }
+      );
+
+      devShells = forAllSystems (
+        system:
+        let
+          pkgs = import nixpkgs { inherit system; };
+        in
+        {
+          default = pkgs.mkShellNoCC {
+            packages = with pkgs; [
+              nodejs_20
+              pnpm_10
+              turbo
+            ];
+            shellHook = ''
+              echo "fw-processing dev: use «pnpm install» then «pnpm run build» / «pnpm run dev»."
+            '';
+          };
+        }
+      );
     };
 }
