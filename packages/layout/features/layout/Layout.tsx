@@ -93,8 +93,9 @@ export function Layout({children, title, drawer, drawerWidth='30%', tabs}: Props
 
                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                  <Tabs value={ tabIdx } /*onChange={handleChange}*/>
-                   { tabs.map( (tab, idx) => { const onClick = useCallback( () => setTabIdx(idx), [idx] );
-			                       return <Tab key={'tab'+idx} icon={tab.icon as any} label={tab.label} onClick={onClick} /> } ) }
+                   { tabs.map( (tab, idx) =>
+                      <Tab key={'tab'+idx} icon={tab.icon as any} label={tab.label} onClick={() => setTabIdx(idx)} /> 
+                          ) }
                  </Tabs>
                </Box>
 	       { tabContent }

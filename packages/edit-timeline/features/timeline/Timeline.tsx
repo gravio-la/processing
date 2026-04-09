@@ -10,11 +10,10 @@ import {
   DataGroupCollectionType,
   DateType,
   IdType,
-  Timeline as TimelineType,
   TimelineItem,
   TimelineOptions,
   TimelineOptionsItemCallbackFunction
-} from "vis-timeline/types";
+} from "vis-timeline/declarations";
 import { useAppSelector, useAppDispatch } from "state";
 import { AppDispatch } from "state";
 import { selectData, setCellData, setRowSelection, Row } from "state";
@@ -85,7 +84,7 @@ export function Timeline() {
           (event) => event && event.start
         ) /** entries with missing start are not valid **/
 	.map(event => event as Item),
-    [tableData]
+    [tableData, eventFromRow]
   );
   console.log({tableData, mapping, items})
 
@@ -103,7 +102,7 @@ export function Timeline() {
 
   const onMove: TimelineOptionsItemCallbackFunction = useCallback(
     (item: TimelineItem, callback: any) => handleMove(dispatch, item as Item, callback),
-    [dispatch]
+    [dispatch, handleMove]
   );
   const onSelect = useCallback(
     (selectionArgs: { items: number[] }) =>

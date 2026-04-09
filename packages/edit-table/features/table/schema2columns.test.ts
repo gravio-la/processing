@@ -31,7 +31,7 @@ test('single object + prefix', () => {
       }
     }
   }
-  expect(schema2columns( schema, 'name' )).toStrictEqual(
+  expect(schema2columns( schema, undefined, 'name' )).toStrictEqual(
     [
       {
         "accessorKey": "name.firstName",

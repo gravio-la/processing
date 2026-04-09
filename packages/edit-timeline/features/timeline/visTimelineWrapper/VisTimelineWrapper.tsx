@@ -6,16 +6,16 @@ import {
   DataGroupCollectionType,
   DateType,
   IdType,
-  Timeline as TimelineType,
   TimelineItem,
   TimelineOptions,
-} from "vis-timeline/types";
+} from "vis-timeline/declarations";
 import "vis-timeline/styles/vis-timeline-graph2d.css";
 
 import type {
+  DataItem,
   TimelineAnimationOptions,
   TimelineEvents,
-} from "vis-timeline/types";
+} from "vis-timeline/declarations";
 
 export type TimelineEventsWithMissing =
   | TimelineEvents
@@ -107,13 +107,15 @@ const VisTimelineWrapper = ({
 }: Props) => {
   const timelineContainerRef: RefObject<HTMLDivElement> =
     useRef<HTMLDivElement>(null);
-  const timelineDatasetRef = useRef<DataSet<TimelineItem> | null>();
+  const timelineDatasetRef = useRef<DataSet<DataItem, "id"> | null>(null);
   const timelineGroupsRef = useRef<DataGroupCollectionType>();
-  const timelineRef = useRef<TimelineType | null>(null);
+  const timelineRef = useRef<InstanceType<typeof TimelineConstructor> | null>(
+    null
+  );
   const prevItems = useRef<TimelineItem[] | null>(null);
 
   useEffect(() => {
-    timelineDatasetRef.current = new DataSet();
+    timelineDatasetRef.current = new DataSet<DataItem, "id">();
     timelineRef.current = new TimelineConstructor(
       timelineContainerRef.current!,
       timelineDatasetRef.current,
@@ -144,7 +146,7 @@ const VisTimelineWrapper = ({
     if (!timelineDatasetRef.current || !timelineRef.current) return;
 
     let itemsLength = timelineDatasetRef.current.get().length
-    timelineDatasetRef.current.update(items);
+    timelineDatasetRef.current.update(items as DataItem[]);
     if(items.length !== itemsLength) {
       timelineRef.current.fit();
     }

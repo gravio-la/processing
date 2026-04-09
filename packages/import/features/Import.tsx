@@ -1,15 +1,18 @@
 import { useEffect } from 'react';
 
 import { useAppSelector, useAppDispatch, setRowData } from 'state';
-import { selectJsonSchema, selectCryptedData, setCryptedData, selectUiSchema, setJsonSchema, setUiSchema, CryptedData } from 'project-state';
+import { selectJsonSchema, selectCryptedData, setCryptedData, selectUiSchema, setJsonSchema, setUiSchema } from 'project-state';
 import { PGPProvider, useDecryptUsingContext } from 'pgp-provider';
 import { api } from '@formswizard/api';
 
 function useFormId() {
-  const hash = typeof location != 'undefined' ? location.hash.slice(1) : '';
-  const hashParameters = !hash ? {} : Object.fromEntries(new URLSearchParams(hash) as any);
-  const { formId } = hashParameters;
-  return formId
+  if (typeof location === 'undefined' || !location.hash) {
+    return undefined;
+  }
+
+  const hash = location.hash.startsWith('#') ? location.hash.slice(1) : location.hash;
+  const formId = new URLSearchParams(hash).get('formId');
+  return formId ?? undefined;
 }
 
 export function DecryptAndImportLastNewSubmission() {
@@ -19,13 +22,14 @@ export function DecryptAndImportLastNewSubmission() {
   const cryptedData = useAppSelector(selectCryptedData);
   useEffect( () => {
     async function loadCryptedData() {
+      if (!formId) return;
       const { cryptedData } = await api.getProjectStateCryptedData(formId);
       cryptedData?.map( cryptedDatum => {
         dispatch(setCryptedData(cryptedDatum));  // TODO use a setter for all cryptedData at the same time
       });
     }
     cryptedData.length || loadCryptedData()
-  }, [cryptedData])
+  }, [cryptedData, dispatch, formId])
 
   const decrypt = useDecryptUsingContext();
   useEffect( () => {
@@ -36,7 +40,7 @@ export function DecryptAndImportLastNewSubmission() {
       const row = { ...decrypted, id, keyId, armoredPublicKey }
       decrypted && dispatch(setRowData({row}));
     })
-  }, [cryptedData]);
+  }, [cryptedData, dispatch, decrypt]);
 
   return <></>
 }
@@ -49,13 +53,14 @@ export function useSchema() {
 
   useEffect(() => {
     async function loadSchema() {
+      if (!formId) return;
       const { schema } = await api.getProjectStateSchema(formId);
       const { jsonSchema, uiSchema } = schema || {};
       jsonSchema && dispatch(setJsonSchema(jsonSchema))
       jsonSchema && dispatch(setUiSchema(uiSchema))
     }
     jsonSchema || loadSchema()
-  }, [jsonSchema, uiSchema, dispatch])
+  }, [jsonSchema, uiSchema, dispatch, formId])
 }
 
 export function Import() {

@@ -10,7 +10,7 @@ function PresetSelectorCard({preset, raised, index, attackVector}: {preset: Pres
   const onClick = useCallback( () => securityStateDispatch && securityStateDispatch({ attackVector,
                                                                                       type: ACTIONS.selectPreset,
                                                                                       payload: {index} }),
-			       [index, securityStateDispatch] );
+			       [index, securityStateDispatch, attackVector] );
   const Icon = preset._ui?.icon;
   return (
     <Card onClick={onClick}

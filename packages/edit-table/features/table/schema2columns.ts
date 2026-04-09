@@ -46,7 +46,6 @@ function property2column({key, subJsonSchema, prefix, uiSchema}: {key: string, s
 }
 
 export function schema2columns(schema: JsonSchema, uiSchema?: UISchemaElement, prefix='') {
-  console.log({schema, uiSchema})
   switch(schema.type) {
     case "object":
       return Object.entries(schema.properties||{})

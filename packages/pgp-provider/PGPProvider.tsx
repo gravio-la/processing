@@ -64,7 +64,7 @@ export function PGPProvider({generateKeyOptions={}, children}: {generateKeyOptio
       };
     };
     asyncEffect();
-  }, [keyPair, setKeyPair])
+  }, [keyPair, setKeyPair, generateKeyOptions, passphrase])
 
   return (
     <PGPContext.Provider value={keyPair}>
@@ -83,7 +83,7 @@ export async function encrypt(text: string, armoredPubKeys?: string[], publicKey
   }
 }
 
-export function encryptUsingContext(text: string, armoredPubKeys?: string[]) {
+export function useEncryptUsingContext(text: string, armoredPubKeys?: string[]) {
   const {publicKey} = useKeyContext();  // The users publicKey will used in addition to the optionally specified armoredPubKeys
   const [encrypted, setEncrypted] = useState<string>();
 
@@ -93,7 +93,7 @@ export function encryptUsingContext(text: string, armoredPubKeys?: string[]) {
       setEncrypted(encrypted);
     };
     asyncEffect();
-  }, [text, publicKey, setEncrypted]);
+  }, [text, publicKey, armoredPubKeys, setEncrypted]);
 
   return encrypted;
 };
@@ -106,27 +106,12 @@ export function useDecryptUsingContext() {
       const message = await readMessage({ armoredMessage });
       const decrypted = (await pgp_decrypt({ message, decryptionKeys })
                                .catch(e => { console.error('Decryption failed. Do you have a correct privateKey?')
-                                             console.warn(e) })
-			)?.data.toString()
+                                             console.warn(e) 
+                                             return undefined
+                                            })
+			)?.data?.toString()
       return decrypted
     }
   };
   return decrypt
 }
-
-export function decryptUsingContext(armoredMessage?: string) {
-  const decrypt = useDecryptUsingContext();
-  const [decrypted, setDecrypted] = useState<string>();
-
-  useEffect(() => {
-    const asyncEffect = async () => {
-      if(armoredMessage) {
-	const decrypted = await decrypt(armoredMessage);
-	decrypted && setDecrypted(decrypted)
-      }
-    };
-    asyncEffect();
-  }, [armoredMessage, setDecrypted]);
-
-  return decrypted;
-};

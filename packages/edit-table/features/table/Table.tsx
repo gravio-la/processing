@@ -33,10 +33,9 @@ export const Table = () => {
     <MaterialReactTable
       tableInstanceRef={tableInstanceRef}
 
-      //@ts-ignore
       columns={columns}
       data={tableData}
-      state={tableState}
+      state={tableState as any}
 
       enableColumnResizing
       enablePinning

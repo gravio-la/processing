@@ -11,7 +11,7 @@ export function Print({json={}}: {json: any}) {
     <h4>{key}</h4>
     <p>
       { JSON.stringify(data, undefined, indentation).split('\n').map(
-          line => <>{ line.split(indentation).map( token => <span>{token} &nbsp; </span> ) }<br/></>
+          line => <React.Fragment key={line}>{ line.split(indentation).map( token => <span key={token}>{token} &nbsp; </span> ) }<br/></React.Fragment>
         )
       }
     </p>
