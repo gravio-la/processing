@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "catalog:",
-    "material-react-table": "^1.14.0",
+    "material-react-table": "^1.15.1",
     "project-state": "workspace:*",
     "react-redux": "catalog:",
     "react-redux-yjs": "workspace:*",

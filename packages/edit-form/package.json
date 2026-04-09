@@ -21,7 +21,7 @@
     "@jsonforms/react": "~3.1.0",
     "@mui/icons-material": "catalog:",
     "@mui/material": "catalog:",
-    "@mui/x-date-pickers": "^6.12.0",
+    "@mui/x-date-pickers": "^6.20.2",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "project-state": "workspace:*",

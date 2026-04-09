@@ -22,9 +22,9 @@
     "@jsonforms/core": "catalog:",
     "@mui/icons-material": "catalog:",
     "@mui/material": "catalog:",
-    "@mui/x-date-pickers": "^6.12.0",
+    "@mui/x-date-pickers": "^6.20.2",
     "@types/react": "catalog:",
-    "material-react-table": "^1.14.0",
+    "material-react-table": "^1.15.1",
     "project-state": "workspace:*",
     "state": "workspace:*"
   }

@@ -15,6 +15,6 @@
     "tsconfig": "workspace:*"
   },
   "dependencies": {
-    "openpgp": "^5.9.0"
+    "openpgp": "^5.11.3"
   }
 }
