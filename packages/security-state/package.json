@@ -13,25 +13,20 @@
     "dev": "npm run build -- --watch"
   },
   "dependencies": {
-    "@emotion/react": "^11.11.1",
-    "@emotion/styled": "^11.11.0",
+    "@emotion/react": "catalog:",
+    "@emotion/styled": "catalog:",
     "@formswizard/config": "^0.2.1",
-    "@mui/base": "5.0.0-beta.12",
-    "@mui/icons-material": "^5.14.6",
-    "@mui/material": "^5.14.6",
-    "@types/react": "^18.2.21",
-    "lodash": "^4.17.21",
-    "react": "^18.2.0",
+    "@mui/base": "catalog:",
+    "@mui/icons-material": "catalog:",
+    "@mui/material": "catalog:",
+    "@types/react": "catalog:",
+    "lodash": "catalog:",
+    "react": "catalog:",
     "style": "workspace:*"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.4",
-    "@types/lodash": "^4.14.197",
-    "eslint": "^8.48.0",
+    "@types/lodash": "catalog:",
     "eslint-config-custom": "workspace:*",
-    "jest": "^29.6.4",
-    "ts-jest": "^29.1.1",
-    "tsconfig": "workspace:*",
-    "typescript": "^5.2.2"
+    "tsconfig": "workspace:*"
   }
 }

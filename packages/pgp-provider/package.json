@@ -8,13 +8,11 @@
     "lint": "eslint \"**/*.ts*\""
   },
   "devDependencies": {
-    "@types/react": "^18.2.21",
-    "@types/react-dom": "^18.2.7",
-    "eslint": "^8.48.0",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
     "eslint-config-custom": "workspace:*",
-    "react": "^18.2.0",
-    "tsconfig": "workspace:*",
-    "typescript": "^5.2.2"
+    "react": "catalog:",
+    "tsconfig": "workspace:*"
   },
   "dependencies": {
     "openpgp": "^5.9.0"

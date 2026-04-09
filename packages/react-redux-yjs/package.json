@@ -11,29 +11,24 @@
     "dev": "npm run build -- --watch"
   },
   "dependencies": {
-    "@reduxjs/toolkit": "^1.9.5",
-    "@types/react": "^18.2.21",
-    "lodash": "^4.17.21",
-    "redux": "^4.2.1",
-    "redux-yjs-bindings": "^0.3.1",
+    "@reduxjs/toolkit": "catalog:",
+    "@types/react": "catalog:",
+    "lodash": "catalog:",
+    "redux": "catalog:",
+    "redux-yjs-bindings": "catalog:",
     "style": "workspace:*",
-    "y-indexeddb": "^9.0.11",
-    "y-webrtc": "^10.2.5",
-    "y-websocket": "^1.5.0",
-    "yjs": "^13.6.7"
+    "y-indexeddb": "catalog:",
+    "y-webrtc": "catalog:",
+    "y-websocket": "catalog:",
+    "yjs": "catalog:"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.4",
-    "@types/lodash": "^4.14.197",
+    "@types/lodash": "catalog:",
     "@types/redux": "^3.6.0",
-    "eslint": "^8.48.0",
     "eslint-config-custom": "workspace:*",
-    "jest": "^29.6.4",
-    "ts-jest": "^29.1.1",
-    "tsconfig": "workspace:*",
-    "typescript": "^5.2.2"
+    "tsconfig": "workspace:*"
   },
   "peerDependencies": {
-    "react": "^18.2.0"
+    "react": "catalog:"
   }
 }

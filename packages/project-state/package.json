@@ -8,21 +8,19 @@
     "lint": "eslint \"**/*.ts*\""
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.197",
-    "@types/react": "^18.2.21",
-    "@types/react-dom": "^18.2.7",
-    "eslint": "^8.48.0",
+    "@types/lodash": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
     "eslint-config-custom": "workspace:*",
-    "react": "^18.2.0",
+    "react": "catalog:",
     "react-redux-yjs": "workspace:*",
-    "tsconfig": "workspace:*",
-    "typescript": "^5.2.2"
+    "tsconfig": "workspace:*"
   },
   "dependencies": {
-    "@jsonforms/core": "^3.1.0",
-    "@reduxjs/toolkit": "^1.9.5",
-    "lodash": "^4.17.21",
-    "react-redux": "^8.1.2",
-    "redux-yjs-bindings": "^0.3.1"
+    "@jsonforms/core": "catalog:",
+    "@reduxjs/toolkit": "catalog:",
+    "lodash": "catalog:",
+    "react-redux": "catalog:",
+    "redux-yjs-bindings": "catalog:"
   }
 }

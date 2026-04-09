@@ -9,16 +9,14 @@
     "generate:component": "turbo gen react-component"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.197",
-    "eslint": "^8.48.0",
+    "@types/lodash": "catalog:",
     "eslint-config-custom": "workspace:*",
-    "tsconfig": "workspace:*",
-    "typescript": "^5.2.2"
+    "tsconfig": "workspace:*"
   },
   "dependencies": {
-    "@jsonforms/core": "^3.1.0",
-    "@types/react": "^18.2.21",
-    "lodash": "^4.17.21",
+    "@jsonforms/core": "catalog:",
+    "@types/react": "catalog:",
+    "lodash": "catalog:",
     "moment": "^2.29.4",
     "project-state": "workspace:*",
     "state": "workspace:*",

@@ -11,18 +11,16 @@
     "dev": "npm run build -- --watch"
   },
   "peerDependencies": {
-    "@mui/base": "5.0.0-beta.8",
-    "@mui/icons-material": "^5.14.0",
-    "@mui/material": "^5.14.0",
-    "react": "^18.2.0"
+    "@mui/base": "catalog:",
+    "@mui/icons-material": "catalog:",
+    "@mui/material": "catalog:",
+    "react": "catalog:"
   },
   "devDependencies": {
-    "eslint": "^8.48.0",
     "eslint-config-custom": "workspace:*",
-    "tsconfig": "workspace:*",
-    "typescript": "^5.2.2"
+    "tsconfig": "workspace:*"
   },
   "dependencies": {
-    "@types/react": "^18.2.21"
+    "@types/react": "catalog:"
   }
 }

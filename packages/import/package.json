@@ -8,17 +8,15 @@
     "dev": "#npm run build -- --watch"
   },
   "peerDependencies": {
-    "react": "^18.2.0"
+    "react": "catalog:"
   },
   "devDependencies": {
-    "eslint": "^8.48.0",
     "eslint-config-custom": "workspace:*",
-    "tsconfig": "workspace:*",
-    "typescript": "^5.2.2"
+    "tsconfig": "workspace:*"
   },
   "dependencies": {
     "@formswizard/api": "^0.2.4",
-    "@types/react": "^18.2.21",
+    "@types/react": "catalog:",
     "pgp-provider": "workspace:*",
     "project-state": "workspace:*",
     "state": "workspace:*"
